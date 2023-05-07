@@ -13,22 +13,27 @@ import child_process from "child_process";
 import { Twilio } from "twilio";
 import { v1 } from "uuid";
 import * as subprocesses from "./subprocesses";
-
 const twilio = new Twilio(
   process.env.TWILIO_ACCOUNT_SID,
   process.env.TWILIO_AUTH_TOKEN
 );
-
+const {
+  MatrixClient,
+  MatrixAuth,
+  SimpleFsStorageProvider,
+  AutojoinRoomsMixin,
+  RustSdkCryptoStorageProvider,
+} = require("matrix-bot-sdk");
 const sdk = require("matrix-js-sdk");
 
-const {
-  SecretStorage,
-  MemoryStore,
-  MemoryCryptoStore,
-  InteractiveAuth,
-  AutojoinRoomsMixin,
-  MatrixClient,
-} = sdk;
+// const {
+//   SecretStorage,
+//   MemoryStore,
+//   MemoryCryptoStore,
+//   InteractiveAuth,
+//   AutojoinRoomsMixin,
+//   MatrixClient,
+// } = sdk;
 
 const donotcall = new DonotcallClient();
 const pipl = new PiplClient({ apiKey: process.env.PIPL_API_KEY });
@@ -174,8 +179,11 @@ export const lookupFaxVinQuery = async (query) => {
 };
 
 const evaluateCommand = async (body, to) => {
-  const [first, queryParts] = body.split(/\s+/g);
+  const splitBody = body.split(/\s+/g);
+  const first = splitBody[0];
+  const queryParts = splitBody.length > 1 ? splitBody.slice(1) : [];
   let query = queryParts.join(" ");
+
   if (first[0] !== "!") return;
   const cmd = first.substr(1);
   switch (cmd) {
@@ -258,23 +266,34 @@ const evaluateCommand = async (body, to) => {
 };
 
 export const run = async () => {
-  const storage = new MemoryStore("simpleStorage");
-  const cryptoStorage = new MemoryCryptoStore("cryptoStorage");
-  client = new MatrixClient({
-    baseUrl: "https://" + process.env.MATRIX_HOMESERVER,
-    store: storage,
-    deviceId: v1(),
-    userId: "@dossi:" + process.env.MATRIX_HOMESERVER,
-    accessToken: process.env.MATRIX_ACCESS_TOKEN,
-    cryptoStore: cryptoStorage,
-  });
-  const _client = await new InteractiveAuth({
+  const storageDirectory = path.join(process.env.HOME, ".matrix-bot", "storage");
+  mkdirp.sync(storageDirectory);
+  const storage = new SimpleFsStorageProvider(path.join(storageDirectory, "simple.json"));
+  const cryptoStorage = new RustSdkCryptoStorageProvider(storageDirectory);
+  const _client = await new MatrixAuth("https://" + process.env.MATRIX_HOMESERVER).passwordLogin(
+    process.env.MATRIX_USERNAME,
+    process.env.MATRIX_PASSWORD,
+    process.env.MATRIX_USERNAME
+  );
+  client = await new MatrixClient(
+    "https://" + process.env.MATRIX_HOMESERVER,
+    _client.accessToken,
+    storage,
+    cryptoStorage,
+  );
+  
+  /* const _client = await new InteractiveAuth({
     matrixClient: client,
+  }); */
+
+  await AutojoinRoomsMixin.setupOnClient(client);
+  await client.start().then(async () => {
+    console.log(client.crypto.isReady);
   });
-  let accessToken = _client.accessToken;
-  await client.initCrypto();
-  await client.startClient();
-  console.log("client started!");
+  // let accessToken = _client.accessToken;
+  // await client.initCrypto();
+  // await client.startClient();
+  
   client.on("RoomMember.membership", function (event, member) {
     (async () => {
       if (member.membership === "invite") {
@@ -290,4 +309,16 @@ export const run = async () => {
     if (sender.match("dossi")) return;
     await evaluateCommand(body, room.roomId);
   });
+  client.on("room.message", async (roomId, event) => {
+      console.log(event);
+      if (event["content"]?.["msgtype"] !== "m.text") return; //don't repond to non-text messages
+      if (event["sender"] === (await client.getUserId())) return; //dont respond to own messages
+
+      const body = event["content"]["body"];
+      if (body?.startsWith("!hello")) {
+            await client.replyNotice(roomId, event, "Hello World");
+         }
+    
+      await evaluateCommand(body, roomId);
+    });
 };

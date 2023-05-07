@@ -19,6 +19,7 @@
     "facebook-recover-puppeteer": "https://github.com/pyrosec/facebook-recover-puppeteer",
     "faxvin-puppeteer": "https://github.com/pyrosec/faxvin-puppeteer",
     "fs-extra": "^10.0.0",
+    "matrix-bot-sdk": "^0.6.5",
     "matrix-js-sdk": "^25.0.0",
     "olm": "https://packages.matrix.org/npm/olm/olm-3.1.5.tgz",
     "pipl": "https://github.com/pyrosec/pipl",
@@ -30,6 +31,7 @@
   "devDependencies": {
     "@types/node": "^20.1.0",
     "nice-repl": "^0.1.2",
+    "prettier": "2.8.8",
     "typescript": "^5.0.4"
   }
 }
