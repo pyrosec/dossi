@@ -1,8 +1,8 @@
 {
     "apps": [
       {
-        "name": "keeperbot",
-        "script": "yarn node bin/start.js"
+        "name": "dossi",
+        "script": "yarn node bin/dossi.js"
       }
     ]
   }
