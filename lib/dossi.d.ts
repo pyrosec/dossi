@@ -1,0 +1,13 @@
+export declare const runZgrep: (query: any, to: any) => void;
+export declare const queryToObject: (query: any) => any;
+export declare const SPOOKY_STUFF: string[];
+export declare const talkGhastly: (to: any) => Promise<void>;
+export declare const from: string;
+export declare const send: (msg: any, to: any) => Promise<unknown>;
+export declare const sendPiplImagesForPerson: (person: any, i: any, to: any) => Promise<void>;
+export declare const sendPiplImages: (fromPipl: any, to: any) => Promise<void>;
+export declare const printPiplResult: (search: any, result: any, to: any) => Promise<unknown>;
+export declare const twilioLookup: (phoneNumber: any) => Promise<import("twilio/lib/rest/lookups/v1/phoneNumber").PhoneNumberInstance>;
+export declare const lookupTruePeopleSearchQuery: (query: any, to: any) => Promise<any>;
+export declare const lookupFaxVinQuery: (query: any) => Promise<any>;
+export declare const run: () => Promise<void>;

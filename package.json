@@ -1,0 +1,35 @@
+{
+  "name": "dossi-matrix",
+  "version": "0.1.0",
+  "description": "intelligence bot used to build dossiers",
+  "main": "lib/index.js",
+  "repository": "https://github.com/pyrosec/dossi",
+  "author": "pyrosec",
+  "license": "MIT",
+  "private": false,
+  "bin": {
+    "dossi": "./bin/dossi.js"
+  },
+  "scripts": {
+    "build": "tsc"
+  },
+  "dependencies": {
+    "@ghostdial/pipl": "https://github.com/pyrosec/pipl",
+    "donotcall": "https://github.com/pyrosec/donotcall",
+    "facebook-recover-puppeteer": "https://github.com/pyrosec/facebook-recover-puppeteer",
+    "faxvin-puppeteer": "https://github.com/pyrosec/faxvin-puppeteer",
+    "fs-extra": "^10.0.0",
+    "matrix-js-sdk": "^25.0.0",
+    "olm": "https://packages.matrix.org/npm/olm/olm-3.1.5.tgz",
+    "pipl": "https://github.com/pyrosec/pipl",
+    "tmpdir": "^1.0.1",
+    "truepeoplesearch-puppeteer": "https://github.com/pyrosec/truepeoplesearch-puppeteer",
+    "twilio": "^4.11.0",
+    "uuid": "^9.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.1.0",
+    "nice-repl": "^0.1.2",
+    "typescript": "^5.0.4"
+  }
+}
